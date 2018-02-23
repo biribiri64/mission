@@ -1,0 +1,166 @@
+<?php
+ $data = 'mission_2-6num.txt'; //テキストファイルを作成&開く
+ $fp2 = fopen('./mission_2-6num.txt', 'r'); //読み込みファイルとして開く
+$num_text = fgets($fp2); //１行目を大文字として読み取る
+fclose($fp2); //ファイルを閉じる
+
+$dataFile = 'mission_2-6.txt'; //テキストファイルを作成&開く
+	$number = (int)$num_text; //文字列をiny型に変換
+	$number += 1; //$numberを1増やす
+
+    $message = $_POST['message']; //$_POST['message']を$messageに代入
+    $user = $_POST['user']; //$_POST['user']を$userに代入
+    $time = date("Y/m/d H:i:s"); //時間を代入
+    $pass = $_POST['pass']; //$_POST['pass']を$passに代入
+   $newData = $number . "<>". $user . "<>" . $message . "<>". $time . "<>". $pass. "<>". "\n";
+
+if(isset($message) && ($user) && ($pass)){ //$message $user $passに値が入っていれば実行 
+
+$fp2 = fopen('./mission_2-6num.txt', 'w'); //書き込み用として開く
+fwrite($fp2, $number); //新しい数値を書き込む
+fclose($fp2); //ファイルを閉じる
+
+ $fp = fopen($dataFile, 'a'); //追記モードとして開く
+ fwrite($fp, $newData); //数値を書き込む
+ fclose($fp); //ファイルを閉じる
+}
+
+//削除
+if(isset($_POST['delno']) && ($_POST['pass1'])){ //$_POST['delno'] $_POST['pass1']に値が入っていたら実行
+$pass1 = $_POST['pass1']; //値を代入
+$del = $_POST['delete']; //値を代入
+$filedata = file('./mission_2-6.txt');
+$fp = fopen('./mission_2-6.txt', 'w+');
+foreach($filedata as $line){
+        $data = explode('<>', $line);
+
+        if(($data[0] == $del) && ($data[4] == $pass1)){ //投稿番号が編集番号と同じ、パスワードが同じなら実行
+        } else {
+	fputs($fp, $line); //元の１行をファイルに追記
+}
+}
+fclose($fp); //ファイルを閉じる
+}
+
+
+?>
+
+
+<?php
+//編集1
+if(!empty($_POST['edit']) && ($_POST['pass2'])){
+$edit = $_POST['edit']; //値を代入
+$pass2 = $_POST['pass2']; //値を代入
+$filedata = file('./mission_2-6.txt'); //1行ずつの配列
+
+foreach($filedata as $line){ //配列からひとつずつ取り出す
+        $data = explode('<>', $line); //<>で切って配列
+ if(($data[0] == $edit) && ($data[4] == $pass2)){ //投稿番号が編集番号と同じ、パスワードが同じなら実行
+	$edit_num=$data[0]; //値を代入
+ 	   $name=$data[1]; //値を代入
+	$comment=$data[2]; //値を代入
+	$pass2=$data[4]; //値を代入
+}
+}
+}
+?>
+
+<?php
+//編集2
+if(isset($_POST['edit_num'])){
+$name = $_POST['name']; //値を代入
+$comment = $_POST['comment']; //値を代入
+$pass2 = $_POST['pass2']; //値を代入
+$edit_num = $_POST['edit_num']; //値を代入
+$filedata = file('./mission_2-6.txt'); //1行ずつの配列
+$fp = fopen('./mission_2-6.txt', 'w+'); //空にして開く
+foreach($filedata as $line){ //配列からひとつずつ取り出す
+        $data = explode('<>', $line); //<>で切って配列
+        if($data[0] == $edit_num){//投稿番号が編集番号と同じなら実行
+
+	$text=$edit_num. "<>". $name. "<>". $comment. "<>". $time. "<>". $pass2. "<>". "\n";
+	fputs($fp, $text); //編集した内容を書き込む
+                } else {
+			fputs($fp,  $line); //元の１行をファイルに追記
+}
+}
+fclose($fp); //ファイルを閉じる
+ //中身をなくす
+        $edit_num="";
+ 	$name="";
+	$comment="";
+	$pass2 = "";
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UFT-8">
+<title>bbチャンネル</title>
+</head>
+<body>
+<font size="7">bチャンネル</font></br>
+
+
+<!-名前を保存させる->
+<font size="3">・名前</font><br/>
+<form action = "" method = "POST">
+<input type = "text" name ="user"><br/>
+
+<!-コメントを保存させる->
+<font size="3">・コメントを入力してください</font><br/>
+<input type="text" name="message"></br>
+
+<font size="3">・パスワードを入力してください</font><br/>
+<input type = "text" name ="pass"><br/>
+<input type = "submit" value ="送信"><br/><br/>
+</form>
+
+<form method="post" action="">
+<!-削除機能->
+<font size="3">・削除する番号を入力してください</font><br/>
+<input type = "text" name ="delete"><br/>
+<font size="3">・パスワードを入力してください</font><br/>
+<input type = "text" name ="pass1"><br/>
+<input type = "submit" name="delno" value ="削除"><br/><br/>
+</form>
+
+<form method="post" action="">
+<!-編集機能->
+<font size="3">・編集する番号を入力してください</font><br/>
+<input type = "text" name ="edit"><br/>
+<font size="3">・パスワードを入力してください</font><br/>
+<input type = "text" name ="pass2"><br/>
+<input type = "submit" value ="編集"><br/><br/>
+</form>
+
+<form method="post" action="">
+<input name="edit_num" type="hidden" value="<?php echo $edit_num;?>"/>
+<font size="3">・編集してください</font><br/>
+<font size="3">・名前</font><br/>
+<input type = "text" name="name" value="<?php echo $name;?>"/><br/>
+<font size="3">・コメントを入力してください</font><br/>
+<input type = "text" name="comment" value="<?php echo $comment;?>"/><br/>
+<font size="3">・パスワードを入力してください</font><br/>
+<input type = "text" name ="pass2" value="<?php echo $pass2;?>"/><br/>
+<input type = "submit" value ="送信"><br/><br/>
+</form>
+
+<?php
+$filedata = file("./mission_2-6.txt");
+
+foreach($filedata as $line){ //配列からひとつずつ取り出す
+	$data = explode("<>", $line); //<>で切って配列
+ //表示
+	echo '番号:'.$data[0]. '<br/>';
+	echo '名前:'.$data[1]. '<br/>';
+        echo 'コメント:'.$data[2]. '<br/>';
+        echo '投稿時間:'.$data[3]. '<br/>';
+	echo '<hr/>';
+}
+?>
+
+</body>
+</html>
